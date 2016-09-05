@@ -1,7 +1,6 @@
 #include "getopt.h"
 #include "TCPSocket.h"
-#include <pthread.h>
-//#include <cstdlib>
+#include <cstdlib>
 
 const char* MSG_DELIM = "================================";
 
@@ -59,9 +58,9 @@ int main(int argc, char* argv[])
         case 'h':
         {
             if(temp){
-                strcpy(cfg.host, temp);
+                cfg.host = temp;
             } else {
-                strcpy(cfg.host, "localhost");
+                cfg.host = "localhost";
             }
         }
             break;
