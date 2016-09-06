@@ -85,6 +85,7 @@ int main(int argc, char* argv[])
         }
     } catch(std::exception &e){
         printf("Caught an exception: %s", e.what());
+		system("pause");
     }
 
     return 1;

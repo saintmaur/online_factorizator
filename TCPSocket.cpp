@@ -22,13 +22,23 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#pragma comment(lib,"ws2_32.lib") //Winsock Library
 #endif
 
 std::mutex client_mutex;
 std::mutex server_mutex;
 
 TCPSocket::TCPSocket(){
-    TCPSock = socket(AF_INET, SOCK_STREAM, 6);
+	
+	if (!init())
+	{
+		char temp[DFLT_BUFFER_SIZE];
+		sprintf(temp, "Unable to initialize server socket");
+		std::exception e(temp);
+		throw(e);
+	}
+
+	TCPSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (TCPSock < 0)
     {
         printf("Unable to create socket\n");
@@ -56,6 +66,15 @@ void TCPSocket::close_socket()
 #endif
 }
 
+void close_socket(int sock)
+{
+#ifdef __linux__
+	close(sock);
+#else
+	closesocket(sock);
+#endif
+}
+
 void TCPSocket::set_msg(const char* msg_)
 {
 	msg.assign(msg_);
@@ -63,18 +82,60 @@ void TCPSocket::set_msg(const char* msg_)
 
 void TCPClient::cust_connect(const cfg_t &cfg)
 {
-    sockaddr_in serverInfo;
+	struct addrinfo *result = NULL,
+					*ptr = NULL,
+					hints;
+
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	hints.ai_protocol = IPPROTO_TCP;
+	
+	/*char port_str[10];
+	itoa(cfg.port, port_str, 10);
+
+	int res = getaddrinfo(cfg.host.c_str(), port_str, &hints, &result);
+	if (res != 0)
+	{
+		char temp[50];
+		sprintf(temp, "getaddrinfo failed with error: %d\n", res);
+		std::exception e(temp);
+		throw e;
+	}*/
+
+	sockaddr_in serverInfo;
+
+	hostent* host = gethostbyname(cfg.host.c_str());
+	if (host == NULL)
+	{
+		char temp[50];
+		sprintf(temp, "gethostbyname has failed\n");
+		std::exception e(temp);
+		throw e;
+	}
+	char ip[100];
+
+	struct in_addr **addr_list;
+
+	addr_list = (in_addr **)host->h_addr_list;
+
+	for (int i = 0; addr_list[i] != NULL; i++)
+	{
+		//Return the first one;
+		std::cout << inet_ntoa(*addr_list[i]) << std::endl;
+		strcpy(ip, inet_ntoa(*addr_list[i]));
+	}
+	//char * ip = inet_ntoa(*(in_addr*)host->h_addr_list[0]);
 
     serverInfo.sin_family = AF_INET;
-    serverInfo.sin_addr.s_addr = INADDR_ANY;
+    serverInfo.sin_addr.s_addr = inet_addr(ip);
     serverInfo.sin_port = htons(cfg.port);
 
-    int retVal = connect(TCPSock, (struct sockaddr*) &serverInfo, sizeof(serverInfo));
+	int retVal = connect(TCPSock, (sockaddr *)&serverInfo, sizeof(serverInfo));
     if (retVal < 0)
     {
-        char temp[50];
-        sprintf(temp, "Unable to connect to server (%s:%d)\n", cfg.host.c_str(), cfg.port);
-        TCPException e(temp);
+        char temp[128];
+		sprintf(temp, "Unable to connect to server (%s:%d): %d\n", cfg.host.c_str(), cfg.port, WSAGetLastError());
+        std::exception e(temp);
         throw(e);
     } else
     {
@@ -97,7 +158,7 @@ void TCPClient::cust_send()
     int retVal = send(TCPSock, msg.c_str(), strlen(msg.c_str()), 0);
     if (retVal < 0)
     {
-        TCPException e("Unable to send the message to the server");
+        std::exception e("Unable to send the message to the server");
         throw(e);
     }
 
@@ -106,26 +167,26 @@ void TCPClient::cust_send()
 
     if (retVal < 0)
     {
-        TCPException e("Unable to receive a message from server");
+        std::exception e("Unable to receive a message from server");
         throw(e);
     }
 
     printf("Number factorization is: %s\n", response);
 }
 
-void serve(int arg){
-
+void serve(int arg)
+{
     std::cout << "Ready to recieve a message\n";
     std::cout << " Thread #" << std::this_thread::get_id() << " is running\n";
     int clientSock = arg;
 
     fflush(stdin);
 
-    char f_name[20];
+    /*char f_name[20];
     time_t ts = time(NULL);
     sprintf(f_name, "Socket_%f_file.txt", (double)ts);
 
-    FILE * cli_file_h = fopen(f_name, "a");
+    FILE * cli_file_h = fopen(f_name, "a");*/
 
     char sendBuffer[DFLT_BUFFER_SIZE];
 
@@ -167,19 +228,20 @@ void serve(int arg){
 	    responce = "";
         }
     }
-    fclose(cli_file_h);
+	close_socket(clientSock);
 }
 
 bool TCPSocket::init()
 {
 #ifndef __linux__
     WSADATA wsaData;
-    int iResult;
-    iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-    if (iResult != 0) 
+	// initialize the winsock library 
+	// - pass the version and the placeholder for additional data
+    int res = WSAStartup(MAKEWORD(2, 2), &wsaData);
+    if (res != 0) 
     {
-	printf("WSAStartup failed with error: %d\n", iResult);
-	return false;
+		printf("WSAStartup failed with error: %d\n", res);
+		return false;
     }
     return true;
 #else
@@ -190,14 +252,6 @@ bool TCPSocket::init()
 void TCPServer::cust_connect(const cfg_t &cfg)
 {
     sockaddr_in serverInfo;
-    if (!init())
-    {
-	char temp[DFLT_BUFFER_SIZE];
-	sprintf(temp, "Unable to initialize server socket(%s:%d)\n", 
-		cfg.host.c_str(), cfg.port);
-	TCPException e(temp);
-	throw(e);
-    }
 
     serverInfo.sin_family = AF_INET;
     serverInfo.sin_addr.s_addr = INADDR_ANY;
@@ -209,7 +263,7 @@ void TCPServer::cust_connect(const cfg_t &cfg)
         char temp[DFLT_BUFFER_SIZE];
         sprintf(temp, "Unable to wake up the server (%s:%d)\n", 
 		cfg.host.c_str(), cfg.port);
-        TCPException e(temp);
+        std::exception e(temp);
         throw(e);
     } else 
     {
@@ -225,7 +279,7 @@ void TCPServer::cust_connect(const cfg_t &cfg)
     retVal = listen(TCPSock, 10);
     if (retVal < 0)
     {
-        TCPException e("Unable to listen");
+        std::exception e("Unable to listen");
         throw(e);
     }
     //Ждем клиента
@@ -236,21 +290,11 @@ void TCPServer::cust_connect(const cfg_t &cfg)
 
         if (clientSock < 0)
         {
-            TCPException e("Unable to accept connection");
+            std::exception e("Unable to accept connection");
             throw(e);
         }
 	std::cout << " Thread #" << std::this_thread::get_id() << " is running\n";
 	std::thread handler(serve, clientSock);
 	handler.detach();
     }
-}
-
-TCPException::TCPException(const char* msg) {
-    strcpy(err, msg);
-}
-
-const char* TCPException::what() const throw() {
-    char result[DFLT_BUFFER_SIZE];
-    sprintf(result, "%s: %s\n\n", err, strerror(errno));
-    return result;
 }

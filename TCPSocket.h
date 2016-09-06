@@ -15,15 +15,8 @@
 #endif
 
 
+void close_socket(int sock);
 void serve(int arg);
-
-class TCPException: public std::exception
-{
-public:
-    TCPException(const char* msg);
-    const char* what() const throw();
-    char err[DFLT_BUFFER_SIZE];
-};
 
 class TCPSocket
 {
