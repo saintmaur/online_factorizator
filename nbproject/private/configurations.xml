@@ -2,11 +2,14 @@
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
-      <in>TCPSocket.cpp</in>
-      <in>TCPSocket.h</in>
-      <in>common.h</in>
+      <in>client.cpp</in>
       <in>factorizator.cpp</in>
+      <in>getopt.cpp</in>
+      <in>getopt.h</in>
       <in>main.cpp</in>
+      <in>server.cpp</in>
+      <in>socket.cpp</in>
+      <in>socket.h</in>
     </df>
   </logicalFolder>
   <projectmakefile>makefile</projectmakefile>
@@ -34,6 +37,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -45,11 +50,12 @@
       </nativedebugger>
       <runprofile version="9">
         <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" -m 2</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
         </runcommandpicklist>
         <runcommand>"${OUTPUT_PATH}"</runcommand>
         <rundir>.</rundir>
-        <buildfirst>false</buildfirst>
+        <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
         <remove-instrumentation>0</remove-instrumentation>
         <environment>

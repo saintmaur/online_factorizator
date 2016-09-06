@@ -2,9 +2,12 @@
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
-      <in>TCPSocket.cpp</in>
+      <in>client.cpp</in>
       <in>factorizator.cpp</in>
+      <in>getopt.cpp</in>
       <in>main.cpp</in>
+      <in>server.cpp</in>
+      <in>socket.cpp</in>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Важные файлы"
@@ -26,6 +29,9 @@
         <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
+      <flagsDictionary>
+        <element flagsID="0" commonFlags="-std=c++11"/>
+      </flagsDictionary>
       <codeAssistance>
       </codeAssistance>
       <makefileType>
@@ -33,18 +39,30 @@
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
           <buildCommand>${MAKE} -f makefile</buildCommand>
           <cleanCommand>${MAKE} -f makefile clean</cleanCommand>
-          <executablePath></executablePath>
+          <executablePath>online_factor</executablePath>
         </makeTool>
         <preBuild>
           <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
           <preBuildCommand></preBuildCommand>
         </preBuild>
       </makefileType>
-      <item path="TCPSocket.cpp" ex="false" tool="1" flavor2="0">
+      <item path="client.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="factorizator.cpp" ex="false" tool="1" flavor2="0">
+      <item path="factorizator.cpp" ex="false" tool="1" flavor2="4">
       </item>
-      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      <item path="getopt.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
+      </item>
+      <item path="server.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="socket.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
     </conf>
   </confs>
