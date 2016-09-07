@@ -43,8 +43,7 @@ void serve(int arg)
 	auto res = recv(clientSock, recvBuffer, sizeof(recvBuffer), 0);
 	std::string response = "";
 	
-	std::cout << "Received data: " << recvBuffer << std::endl
-		<< "will try to find the prime factors" << std::endl;
+	std::cout << "Received data: " << recvBuffer << std::endl;
 		
         if(res > 0)
         {
@@ -81,6 +80,7 @@ void serve(int arg)
         // if response is prepared send it
 	if(sizeof(send_buf))
 	{
+	    std::cout << "the prime factors found: " << send_buf << std::endl;
             send(clientSock, send_buf, sizeof(send_buf), 0);
         }
     }
@@ -96,7 +96,7 @@ void TCPServer::cust_connect(const cfg_t &cfg)
     serverInfo.sin_addr.s_addr = INADDR_ANY;
     serverInfo.sin_port = htons(cfg.port);
     // bind the unbound socket to the certain port
-    int retVal = bind(TCPSock, (struct sockaddr*)& serverInfo, sizeof(serverInfo));
+    int retVal = bind(sock, (struct sockaddr*)& serverInfo, sizeof(serverInfo));
     if (retVal < 0)
     {
         char temp[DFLT_BUFFER_SIZE];
@@ -116,7 +116,7 @@ void TCPServer::cust_connect(const cfg_t &cfg)
 		<< "Listening...\n";
     }
     // start listening on the socket binded to the port
-    retVal = listen(TCPSock, 10);
+    retVal = listen(sock, 10);
     if (retVal < 0)
     {
         throw std::string("Unable to start listening");
@@ -125,7 +125,7 @@ void TCPServer::cust_connect(const cfg_t &cfg)
     while (1)
     {
 	std::cout << "Ready for new connections\n";
-	auto clientSock = accept(TCPSock, NULL, NULL);
+	auto clientSock = accept(sock, NULL, NULL);
 	
         if (clientSock < 0)
         {

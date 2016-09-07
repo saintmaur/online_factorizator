@@ -25,7 +25,6 @@ enum appl_mode_t{
 struct cfg_t 
 {
     int port		    = DFLT_PORT;
-    int clnt_count	    = DFLT_CLNT_COUNT;
     std::string host	    = "localhost";
     appl_mode_t appl_mode   = mode_server;
 };
@@ -39,7 +38,7 @@ class TCPSocket
 {
 protected:
     std::string sid;
-    int TCPSock;
+    int sock;
     std::string msg;
 public:
     TCPSocket();
@@ -50,7 +49,9 @@ public:
     virtual void cust_send(){}
     std::string receive_data();
     void set_msg(const char* msg_);
+    int check_connection();
     void close_socket();
+    int get_socket();
 };
 
 class TCPClient : public TCPSocket

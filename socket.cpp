@@ -55,8 +55,8 @@ TCPSocket::TCPSocket(){
 		throw temp;
 	}
 
-	TCPSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (TCPSock < 0)
+	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    if (sock < 0)
     {
         printf("Unable to create socket\n");
 
@@ -76,7 +76,7 @@ TCPSocket::~TCPSocket(){
 std::string TCPSocket::receive_data()
 {
     char response[DFLT_BUFFER_SIZE];
-    int res = recv(TCPSock, response, sizeof(response), 0);
+    int res = recv(sock, response, sizeof(response), 0);
 
     if (res < 0)
     {
@@ -89,9 +89,9 @@ std::string TCPSocket::receive_data()
 void TCPSocket::close_socket()
 {
 #ifdef __linux__
-	close(TCPSock);
+	close(sock);
 #else
-	closesocket(TCPSock);
+	closesocket(sock);
 	WSACleanup();
 #endif
 }
@@ -116,7 +116,7 @@ void close_socket(int sock)
 
 void TCPSocket::set_msg(const char* msg_)
 {
-	msg.assign(msg_);
+    msg.assign(msg_);
 }
 
 bool TCPSocket::init()
@@ -135,4 +135,21 @@ bool TCPSocket::init()
 #else
     return true;
 #endif
+}
+
+int TCPSocket::check_connection()
+{
+    int error_code;
+    unsigned int error_code_size = sizeof (error_code);
+    getsockopt(sock, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
+    if(error_code)
+    {
+	close_socket();
+	throw std::string("Connection is closed");
+    }
+}
+
+int TCPSocket::get_socket()
+{
+    return sock;
 }

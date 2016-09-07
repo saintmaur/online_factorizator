@@ -36,7 +36,7 @@ void TCPClient::cust_connect(const cfg_t &cfg)
     serverInfo.sin_addr.s_addr = inet_addr(ip.c_str());
     serverInfo.sin_port = htons(cfg.port);
 
-    int retVal = connect(TCPSock, (sockaddr *)&serverInfo, sizeof(serverInfo));
+    int retVal = connect(sock, (sockaddr *)&serverInfo, sizeof(serverInfo));
     if (retVal < 0)
     {
         char temp[128];
@@ -46,22 +46,26 @@ void TCPClient::cust_connect(const cfg_t &cfg)
     }
     else
     {
-        std::cout << "Connection has been established\n";
-        std::cout << "Wating for input (enter a number)\n";
+        std::cout << "Connection has been established" << std::endl;
+        std::cout << "Wating for input (enter a number)" << std::endl;
         while(1)
 	{
 	    std::cout << "> ";
-            char seBuf[DFLT_BUFFER_SIZE];
-            std::cin.getline(seBuf, sizeof(seBuf));
-	    set_msg(seBuf);
-            cust_send();
+	    std::string str;
+	    std::cin >> str;
+	    check_connection();
+	    if(str.size())
+	    {
+		set_msg(str.c_str());
+		cust_send();
+	    }
         }
     }
 }
 
 void TCPClient::cust_send()
 {
-    int retVal = send(TCPSock, msg.c_str(), strlen(msg.c_str()), 0);
+    int retVal = send(sock, msg.c_str(), strlen(msg.c_str()), 0);
     if (retVal < 0)
     {
         throw std::string("Unable to send the message to the server");
