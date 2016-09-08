@@ -9,8 +9,17 @@
 #include <iostream>
 #include <string>
 
-#ifndef __linux__
+#ifdef __linux__
+#define TCP_CONN_CLOSED 0
+typedef unsigned int SOCKLEN_TYPE;
+#else
+
 #include <winsock2.h>
+
+#define TCP_CONN_CLOSED WSAECONNRESET
+
+typedef int SOCKLEN_TYPE;
+
 #endif
 
 const int DFLT_CLNT_COUNT   = 2;
@@ -33,6 +42,7 @@ int get_error();
 std::string get_ip(const cfg_t& cfg);
 void close_socket(int sock);
 void serve(int arg);
+std::string get_prime_factors(int num);
 
 class TCPSocket
 {
@@ -45,11 +55,11 @@ public:
     virtual ~TCPSocket();
 
     bool init();
-    virtual void cust_connect(const cfg_t &cfg){}
+    virtual void cust_connect(const cfg_t &){}
     virtual void cust_send(){}
     std::string receive_data();
     void set_msg(const char* msg_);
-    int check_connection();
+    void check_connection();
     void close_socket();
     int get_socket();
 };

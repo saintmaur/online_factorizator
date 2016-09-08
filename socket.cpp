@@ -34,6 +34,12 @@ std::string get_ip(const cfg_t& cfg)
     }
     char ip[100];
 
+	char hostname[512];
+	gethostname(hostname, 1023);
+
+	std::cout << hostname << std::endl
+			<< host->h_name << std::endl;
+	
     struct in_addr **addr_list;
 
     addr_list = (in_addr **) host->h_addr_list;
@@ -137,11 +143,11 @@ bool TCPSocket::init()
 #endif
 }
 
-int TCPSocket::check_connection()
+void TCPSocket::check_connection()
 {
     int error_code;
-    unsigned int error_code_size = sizeof (error_code);
-    getsockopt(sock, SOL_SOCKET, SO_ERROR, &error_code, &error_code_size);
+    SOCKLEN_TYPE error_code_size = sizeof (error_code);
+    getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&error_code, &error_code_size);
     if(error_code)
     {
 	close_socket();

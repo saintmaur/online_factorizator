@@ -26,6 +26,22 @@
 #pragma comment(lib,"ws2_32.lib") //Winsock Library
 #endif
 
+std::string get_prime_factors(int num)
+{
+	std::string result;
+	for (int i = 2; i <= num; ++i)
+	{
+		while (num % i == 0)
+		{
+			num /= i;
+			char temp[128];
+			sprintf(temp, "%d", i);
+			result.append(temp).append(" ");
+		}
+	}
+	return result;
+}
+
 void serve(int arg)
 {
     auto t_id = std::this_thread::get_id();
@@ -38,50 +54,45 @@ void serve(int arg)
     {
         char send_buf[DFLT_BUFFER_SIZE];
 	
-	char recvBuffer[DFLT_BUFFER_SIZE];
-        memset(recvBuffer, 0, strlen(recvBuffer));
-	auto res = recv(clientSock, recvBuffer, sizeof(recvBuffer), 0);
-	std::string response = "";
+		char recvBuffer[DFLT_BUFFER_SIZE];
+			//memset(recvBuffer, 0, strlen(recvBuffer));
+		auto res = recv(clientSock, recvBuffer, sizeof(recvBuffer), 0);
+		std::string response = "";
 	
-	std::cout << "Received data: " << recvBuffer << std::endl;
+		std::cout << "Received data: " << recvBuffer << std::endl;
 		
         if(res > 0)
         {
             if(std::isdigit(recvBuffer[0]))
-	    {
-		int num = atoi(recvBuffer);
-		for (int i = 2; i <= num; ++i) {
-		    while (num % i == 0)
-		    {
-			num /= i;
-			char temp[128];
-			sprintf(temp, "%d", i);
-			response.append(temp).append(" ");
-		    }
+			{
+				int num = atoi(recvBuffer);
+				response = get_prime_factors(num);
+			}
+			else
+			{
+				response = "";
+			}
+		    strcpy(send_buf, response.c_str());
+        }
+		else if (res == 0)
+		{
+			std::cout << "Connection with the client has been closed\n";
+			break;
+		} 
+		else
+		{
+			if (get_error() != TCP_CONN_CLOSED)
+			{
+				std::cout << "Couldn't read data from the client: "
+					<< get_error() << "\n";
+			}
+			break;
 		}
-	    }
-	    else
-	    {
-		response = "";
-	    }
-	    strcpy(send_buf, response.c_str());
-        }
-	else if (res == 0)
-	{
-	    std::cout << "Connection with the client has been closed\n";
-	    break;
-	} 
-	else
-	{
-            std::cout << "Couldn't read data from the client: " 
-		    << strerror(errno) << "\n";
-            break;
-        }
-        // if response is prepared send it
-	if(sizeof(send_buf))
-	{
-	    std::cout << "the prime factors found: " << send_buf << std::endl;
-            send(clientSock, send_buf, sizeof(send_buf), 0);
+        // if response is ready send it
+		if(sizeof(send_buf))
+		{
+		    std::cout << "the prime factors found: " << send_buf << std::endl;
+                send(clientSock, send_buf, sizeof(send_buf), 0);
         }
     }
     std::cout << "The thread #" << t_id << " is to be finished. Wish the best.\n";
@@ -109,9 +120,9 @@ void TCPServer::cust_connect(const cfg_t &cfg)
         std::string ip = get_ip(cfg);
 	std::cout << "The server socket has been binded to an address ("
 		<< ip << ":" << cfg.port << ")\n"
-		<< " use '</path/to>/online_factor -m 2"
-		<< " -h "<< ip
-		<< " -p " << cfg.port << "' to connect \n"
+		<< " use '</path/to>/online_factor client"
+		<< ip
+		<< cfg.port << "' to connect \n"
 		<< " press CTRL+C to stop\n"
 		<< "Listening...\n";
     }
@@ -131,7 +142,7 @@ void TCPServer::cust_connect(const cfg_t &cfg)
         {
             throw std::string("Unable to accept connection");
         }
-	// after receiving a connect start a thread to serve it
+	// start a thread to serve a new connect
 	std::thread handler(serve, clientSock);
 	// no need to wait it
 	handler.detach();

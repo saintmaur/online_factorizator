@@ -1,9 +1,8 @@
-#include "getopt.h"
 #include "socket.h"
 #include <cstdlib>
 #include <iostream>
 #include <string.h>
-#include <ctype.h>
+#include <cctype>
 
 const char* MSG_DELIM = "================================";
 
