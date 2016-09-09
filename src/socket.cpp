@@ -1,22 +1,11 @@
 #include "socket.h"
-#include <iostream>
-#include <errno.h>
-#include <stdio.h>
-#include <thread>
-#include <vector>
-#include <cstdio>
-#include <cstdlib>
-#include <string>
-#include <memory>
-#include <mutex>
-#include <stdlib.h>
-#include <stdio.h>
-#include <chrono>
+#include "common.h"
 
 std::string get_ip(const cfg_t& cfg)
 {
     hostent* host = gethostbyname(cfg.host.c_str());
     if (host == NULL) {
+		auto err = get_error();
 	throw std::string("gethostbyname has failed");
     }
     char ip[100];
@@ -125,7 +114,6 @@ int TCPSocket::check_connection()
     int error_code;
     SOCKLEN_TYPE error_code_size = sizeof (error_code);
     getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&error_code, &error_code_size);
-    
     return error_code;
 }
 

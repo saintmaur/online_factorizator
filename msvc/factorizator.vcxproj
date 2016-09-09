@@ -55,11 +55,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <TargetName>online_factor</TargetName>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(GTEST_ROOT)/include</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTest|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>online_factor</TargetName>
+    <TargetName>online_factor_test</TargetName>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(GTEST_ROOT)/include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -72,8 +72,9 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories />
+      <AdditionalIncludeDirectories>$(GTEST_ROOT)/include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -92,11 +93,12 @@
       </AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;Ws2_32.lib;gtest_maind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;Ws2_32.lib; gtestd.lib; %(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(GTEST_ROOT)/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -118,24 +120,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="client.cpp" />
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\src\client.cpp" />
+    <ClCompile Include="..\src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DebugTest|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="server.cpp" />
-    <ClCompile Include="socket.cpp" />
-    <ClCompile Include="unittest\gtest_main.cpp">
+    <ClCompile Include="..\src\server.cpp" />
+    <ClCompile Include="..\src\socket.cpp" />
+    <ClCompile Include="..\unittest\gtest_common.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="unittest\gtest_socket.cpp">
+    <ClCompile Include="..\unittest\gtest_main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="socket.h" />
-    <ClInclude Include="unittest\gtest_socket.h">
+    <ClInclude Include="..\src\socket.h" />
+    <ClInclude Include="..\unittest\gtest_common.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\src\common.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

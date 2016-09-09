@@ -1,4 +1,7 @@
 #include "socket.h"
+#include "common.h"
+#include <thread>
+#include <chrono>
 #include <algorithm>
 
 // a global variable to keep the connections to the server
@@ -21,13 +24,12 @@ std::string get_prime_factors(int num)
     return result;
 }
 // connection serving thread function
-void serve(int arg)
+void serve(int client_sock)
 {
     auto t_id = std::this_thread::get_id();
     std::cout << " A thread #" << t_id << " has been created\n";
     std::cout << "Ready to handle the messages\n";    
-    
-    int client_sock = arg;
+
     add_connection(client_sock);
     // wait in indefinite loop for data
     while(1)
@@ -103,7 +105,7 @@ void TCPServer::custom_connect(const cfg_t &cfg)
 	char hostname[512];
 	gethostname(hostname, 512);
 	// inform the user how to connect to the newly started server
-	std::cout << "The server socket has been binded to an address ("
+	std::cout << "The server socket has been bound to the address ("
 		<< ip << ":" << cfg.port << ")\n"
 		<< " use '</path/to>/online_factor client "
 		<< hostname << " "
@@ -154,7 +156,7 @@ void remove_connection(int sock)
     connections.erase(elem);
 }
 
-void handle_term_signal(int signal)
+void handle_term_signal(int)
 {
     for (auto sock : connections)
     {

@@ -10,7 +10,8 @@ TEST_F(TCPSocketTest, TCPSocketCanCreateSocket)
 
 TEST_F(TCPSocketTest, TCPSocketCanGetIP)
 {
-    cfg_t cfg = {"www.google.com"};
+	TCPSocket socket_obj;
+	cfg_t cfg = {"www.google.com"};
     auto ip = get_ip(cfg);
     ASSERT_NE(ip, std::string(""));
 }

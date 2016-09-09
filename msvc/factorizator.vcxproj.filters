@@ -18,31 +18,34 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="..\src\server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="client.cpp">
+    <ClCompile Include="..\src\socket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="server.cpp">
+    <ClCompile Include="..\src\client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="socket.cpp">
+    <ClCompile Include="..\src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="unittest\gtest_main.cpp">
+    <ClCompile Include="..\unittest\gtest_common.cpp">
       <Filter>Source Files\unittest</Filter>
     </ClCompile>
-    <ClCompile Include="unittest\gtest_socket.cpp">
+    <ClCompile Include="..\unittest\gtest_main.cpp">
       <Filter>Source Files\unittest</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="socket.h">
+    <ClInclude Include="..\src\socket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="unittest\gtest_socket.h">
+    <ClInclude Include="..\unittest\gtest_common.h">
       <Filter>Source Files\unittest</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\common.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,5 @@
 #include "socket.h"
+#include "common.h"
 
 void TCPClient::custom_connect(const cfg_t &cfg)
 {
@@ -20,6 +21,7 @@ void TCPClient::custom_connect(const cfg_t &cfg)
 	{
 	    std::cout << "> ";
 	    std::string str;
+		str.clear();
 	    // check connection before next input waiting
 	    if(check_connection())
 	    {
