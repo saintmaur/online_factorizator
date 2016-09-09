@@ -12,19 +12,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <chrono>
-#ifdef __linux__
-#include <sys/un.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#else
-#include <cctype>
-#include <windows.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#pragma comment(lib,"ws2_32.lib") //Winsock Library
-#endif
 
 std::string get_ip(const cfg_t& cfg)
 {
@@ -34,66 +21,54 @@ std::string get_ip(const cfg_t& cfg)
     }
     char ip[100];
 
-	char hostname[512];
-	gethostname(hostname, 1023);
-
-	std::cout << hostname << std::endl
-			<< host->h_name << std::endl;
-	
     struct in_addr **addr_list;
-
+    // a way to get the correct IP is hard
     addr_list = (in_addr **) host->h_addr_list;
-
-    for (int i = 0; addr_list[i] != NULL; i++) {
+    for (int i = 0; addr_list[i] != NULL; i++)
+    {
 	//Return the first address;
 	strcpy(ip, inet_ntoa(*addr_list[i]));
     }
-    
     return std::string(ip);
 }
 
 TCPSocket::TCPSocket(){
-	
-	if (!init())
-	{
-		char temp[DFLT_BUFFER_SIZE];
-		sprintf(temp, "Unable to initialize server socket");
-		throw temp;
-	}
-
-	sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+    // winsock initial procedure is something special
+    if (!init())
+    {
+	throw std::string("Unable to initialize a socket");
+    }
+    // try to create a socket
+    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock < 0)
     {
-        printf("Unable to create socket\n");
+        throw std::string("Unable to create socket");
 
-    } else {
-        char tmstmp[50];
-        time_t ts = time(NULL);
-        sprintf(tmstmp, "%f", (double)ts);
-        sid = "Socket_";
-        sid.append(tmstmp);
     }
 }
 
-TCPSocket::~TCPSocket(){
-    close_socket();
+TCPSocket::~TCPSocket()
+{
+    // close own socket
+    close_initial_connect();
 }
 
 std::string TCPSocket::receive_data()
 {
     char response[DFLT_BUFFER_SIZE];
+    // recieve data from socket
     int res = recv(sock, response, sizeof(response), 0);
-
+    // check the result
     if (res < 0)
     {
         throw std::string("Unable to receive a message");
     }
-    
     return std::string(response);
 }
 
-void TCPSocket::close_socket()
+void TCPSocket::close_initial_connect()
 {
+// platform independent socket closing
 #ifdef __linux__
 	close(sock);
 #else
@@ -104,6 +79,7 @@ void TCPSocket::close_socket()
 
 int get_error()
 {
+// platform independent error retrieving
 #ifdef __linux__
     return errno;
 #else
@@ -113,6 +89,7 @@ int get_error()
 
 void close_socket(int sock)
 {
+// platform independent socket closing
 #ifdef __linux__
 	close(sock);
 #else
@@ -130,12 +107,12 @@ bool TCPSocket::init()
 #ifndef __linux__
     WSADATA wsaData;
 	// initialize the winsock library 
-	// - pass the version and the placeholder for additional data
+	// - pass the version and the placeholder for additional data if any
     int res = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (res != 0) 
     {
-		printf("WSAStartup failed with error: %d\n", res);
-		return false;
+	std::cout << "WSAStartup failed with error: " << res << std::endl;
+	return false;
     }
     return true;
 #else
@@ -143,19 +120,38 @@ bool TCPSocket::init()
 #endif
 }
 
-void TCPSocket::check_connection()
+int TCPSocket::check_connection()
 {
     int error_code;
     SOCKLEN_TYPE error_code_size = sizeof (error_code);
     getsockopt(sock, SOL_SOCKET, SO_ERROR, (char *)&error_code, &error_code_size);
-    if(error_code)
-    {
-	close_socket();
-	throw std::string("Connection is closed");
-    }
+    
+    return error_code;
 }
 
 int TCPSocket::get_socket()
 {
     return sock;
 }
+
+sockaddr_in TCPSocket::init_srv_info(const cfg_t& cfg)
+{
+    // a structure to pass necessary params to socket handle functions
+    sockaddr_in serverInfo;
+    // set necessary params
+    serverInfo.sin_family = AF_INET;
+    if(cfg.appl_mode == appl_mode_t::mode_client)
+    {
+	// get the IP address
+	std::string ip = get_ip(cfg);
+	serverInfo.sin_addr.s_addr = inet_addr(ip.c_str());
+    }
+    else
+    {
+	serverInfo.sin_addr.s_addr = INADDR_ANY;
+    }
+    serverInfo.sin_port = htons(cfg.port);
+    
+    return serverInfo;
+}
+    

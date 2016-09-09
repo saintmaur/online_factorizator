@@ -2,16 +2,17 @@
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
-      <df name="unittest">
-        <in>gtest_main.cpp</in>
-        <in>gtest_socket.cpp</in>
+      <df name="src">
+        <in>client.cpp</in>
+        <in>main.cpp</in>
+        <in>server.cpp</in>
+        <in>socket.cpp</in>
       </df>
-      <in>client.cpp</in>
-      <in>factorizator.cpp</in>
-      <in>getopt.cpp</in>
-      <in>main.cpp</in>
-      <in>server.cpp</in>
-      <in>socket.cpp</in>
+      <df name="unittest">
+        <in>gtest_common.cpp</in>
+        <in>gtest_common.h</in>
+        <in>gtest_main.cpp</in>
+      </df>
     </df>
     <logicalFolder name="ExternalFiles"
                    displayName="Важные файлы"
@@ -41,7 +42,7 @@
       <makefileType>
         <makeTool>
           <buildCommandWorkingDir>.</buildCommandWorkingDir>
-          <buildCommand>${MAKE} -f makefile test</buildCommand>
+          <buildCommand>${MAKE} -f makefile</buildCommand>
           <cleanCommand>${MAKE} -f makefile clean</cleanCommand>
           <executablePath>online_factor</executablePath>
           <ccTool>
@@ -53,13 +54,13 @@
           <preBuildCommand></preBuildCommand>
         </preBuild>
       </makefileType>
-      <item path="client.cpp" ex="false" tool="1" flavor2="0">
+      <folder path="0/src">
         <ccTool>
           <incDir>
-            <pElem>/include</pElem>
+            <pElem>.</pElem>
           </incDir>
         </ccTool>
-      </item>
+      </folder>
       <folder path="0/unittest">
         <ccTool>
           <incDir>
@@ -68,44 +69,31 @@
           </incDir>
         </ccTool>
       </folder>
-      <item path="factorizator.cpp" ex="false" tool="1" flavor2="4">
-        <ccTool>
-          <incDir>
-            <pElem>../googletest/googletest/include</pElem>
-          </incDir>
-        </ccTool>
-      </item>
-      <item path="getopt.cpp" ex="false" tool="1" flavor2="8">
+      <item path="src/client.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
-          <incDir>
-            <pElem>../googletest/googletest/include</pElem>
-          </incDir>
         </ccTool>
       </item>
-      <item path="main.cpp" ex="false" tool="1" flavor2="8">
+      <item path="src/main.cpp" ex="false" tool="1" flavor2="8">
         <ccTool flags="0">
-          <incDir>
-            <pElem>../googletest/googletest/include</pElem>
-          </incDir>
         </ccTool>
       </item>
-      <item path="server.cpp" ex="false" tool="1" flavor2="0">
-        <ccTool>
-          <incDir>
-            <pElem>/include</pElem>
-          </incDir>
+      <item path="src/server.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="socket.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool>
-          <incDir>
-            <pElem>/include</pElem>
-          </incDir>
+      <item path="src/socket.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
         </ccTool>
       </item>
-      <item path="unittest/gtest_main.cpp" ex="false" tool="1" flavor2="0">
+      <item path="unittest/gtest_common.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
-      <item path="unittest/gtest_socket.cpp" ex="false" tool="1" flavor2="0">
+      <item path="unittest/gtest_common.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="unittest/gtest_main.cpp" ex="false" tool="1" flavor2="8">
+        <ccTool flags="0">
+        </ccTool>
       </item>
     </conf>
   </confs>

@@ -2,19 +2,22 @@
 <configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <df root="." name="0">
-      <df name="unittest">
-        <in>gtest_main.cpp</in>
-        <in>gtest_socket.cpp</in>
-        <in>gtest_socket.h</in>
+      <df name="bin">
       </df>
-      <in>client.cpp</in>
-      <in>factorizator.cpp</in>
-      <in>getopt.cpp</in>
-      <in>getopt.h</in>
-      <in>main.cpp</in>
-      <in>server.cpp</in>
-      <in>socket.cpp</in>
-      <in>socket.h</in>
+      <df name="msvc">
+      </df>
+      <df name="src">
+        <in>client.cpp</in>
+        <in>main.cpp</in>
+        <in>server.cpp</in>
+        <in>socket.cpp</in>
+        <in>socket.h</in>
+      </df>
+      <df name="unittest">
+        <in>gtest_common.cpp</in>
+        <in>gtest_common.h</in>
+        <in>gtest_main.cpp</in>
+      </df>
     </df>
   </logicalFolder>
   <projectmakefile>makefile</projectmakefile>
@@ -42,6 +45,8 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
+        <gdb_signals>
+        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>
@@ -56,8 +61,9 @@
           <runcommandpicklistitem>"${OUTPUT_PATH}" -m 2</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" client localhost 1111</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" server</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" client localhost 1111</runcommand>
+        <runcommand>"${OUTPUT_PATH}" server</runcommand>
         <rundir>.</rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>

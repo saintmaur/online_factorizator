@@ -3,14 +3,16 @@
 #include <iostream>
 #include <string.h>
 #include <cctype>
+#include <signal.h>
 
-const char* MSG_DELIM = "================================";
+const char* MSG_DELIM = "\n================================\n";
 
 void print_usage(char * cmd)
 {
-    std::string temp_str("Please try one of the following variants:\n");
-    temp_str.append(cmd).append(" server <port>\n")
-	.append(cmd).append(" client <host> <port>");
+    std::string temp_str("Please try one of the following variants:");
+    temp_str.append(MSG_DELIM).append(cmd).append(" server <port>\n")
+	.append(cmd).append(" client <host> <port>")
+	.append(MSG_DELIM);
     throw temp_str;
 }
 
@@ -34,6 +36,8 @@ int parse_port(char* port_str)
 
 int main(int argc, char* argv[])
 {
+    signal(SIGINT, handle_term_signal);
+    
     cfg_t cfg;
     try
     {
@@ -71,13 +75,13 @@ int main(int argc, char* argv[])
         case mode_client:
         {
             TCPClient client;
-            client.cust_connect(cfg);
+            client.custom_connect(cfg);
          }
             break;
         case mode_server:
         {
             TCPServer server;
-            server.cust_connect(cfg);
+            server.custom_connect(cfg);
         }
             break;
         }
